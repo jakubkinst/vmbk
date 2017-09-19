@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion 26
+	buildToolsVersion "26.0.1"
+	defaultConfig {
+		applicationId "cz.kinst.jakub.vmbk"
+		minSdkVersion 16
+		targetSdkVersion 26
+		versionCode 1
+		versionName "1.0"
+		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+	}
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+		}
+	}
+
+	dataBinding.enabled true
+}
+
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+	kapt 'com.android.databinding:compiler:3.0.0-beta6'
+
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+	implementation 'com.android.support:appcompat-v7:26.1.0'
+
+	implementation "android.arch.lifecycle:runtime:1.0.0"
+	implementation "android.arch.lifecycle:extensions:1.0.0-alpha9-1"
+	kapt "android.arch.lifecycle:compiler:1.0.0-alpha9-1"
+
+	implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0'
+	implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
+
+	implementation 'io.rapid:rapid-sdk-android:1.0.19'
+}
