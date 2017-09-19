@@ -29,7 +29,7 @@ inline fun <reified VM: ViewModel, B: ViewDataBinding> vmb(layout: Int, noinline
     }
 }
 
-class ViewModelBinding<out VM : ViewModel, out B : ViewDataBinding>(
+class ViewModelBinding<VM : ViewModel, out B : ViewDataBinding>(
     private val lifecycleOwner: LifecycleOwner,
     private val layout: Int,
     private val vmFactory: (Bundle?) -> VM,
@@ -49,7 +49,9 @@ class ViewModelBinding<out VM : ViewModel, out B : ViewDataBinding>(
     }
 
     init {
-        require(lifecycleOwner is FragmentActivity || lifecycleOwner is Fragment) { "lifecycleOwner is bad!" }
+        require(lifecycleOwner is FragmentActivity || lifecycleOwner is Fragment) {
+            "lifecycleOwner has to be FragmentActivity or Fragment"
+        }
 
         lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -71,11 +73,11 @@ class ViewModelBinding<out VM : ViewModel, out B : ViewDataBinding>(
         return ViewModelProviders.of(this, factory(f)).get(vmClass)
     }
 
-}
-
-@Suppress("UNCHECKED_CAST")
-private fun <VM : ViewModel> factory(f: () -> VM) = object : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>?): T {
-        return f() as T
+    @Suppress("UNCHECKED_CAST")
+    fun factory(f: () -> VM) = object : ViewModelProvider.NewInstanceFactory() {
+        override fun <T : ViewModel> create(modelClass: Class<T>?): T {
+            return f() as T
+        }
     }
+
 }

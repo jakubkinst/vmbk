@@ -12,7 +12,9 @@ import cz.kinst.jakub.vmbk.vmb
 
 class MainActivity : AppCompatActivity() {
 
-    val vmb by vmb<MainViewModel, ActivityMainBinding>(R.layout.activity_main) { _ -> MainViewModel(message = "Aloha") }
+    val vmb by vmb<MainViewModel, ActivityMainBinding>(R.layout.activity_main) { _ -> // bundle optional
+        MainViewModel(message = "Testable")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
