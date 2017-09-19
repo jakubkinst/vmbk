@@ -11,7 +11,10 @@ import cz.kinst.jakub.vmbk.databinding.ActivityMainBinding
 import cz.kinst.jakub.vmbk.vmb
 
 class MainActivity : AppCompatActivity() {
-    val vmb = vmb<MainViewModel, ActivityMainBinding>(R.layout.activity_main)
+
+    val vmb by vmb<MainViewModel, ActivityMainBinding>(R.layout.activity_main) { _ -> // bundle optional
+        MainViewModel(message = "Testable")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,16 +25,17 @@ class MainActivity : AppCompatActivity() {
         vmb.viewModel.displayMessage.observe(this, Observer {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         })
+
     }
 }
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel(val message: String) : ViewModel() {
     val displayMessage = SingleLiveData<String>()
     val navigationManager = NavigationManager()
 
     fun showChat() {
-        displayMessage.value = "Switched to Chat."
+        displayMessage.value = message
         navigationManager.goToChat()
     }
 }
