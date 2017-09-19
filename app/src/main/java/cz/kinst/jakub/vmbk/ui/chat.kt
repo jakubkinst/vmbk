@@ -20,11 +20,12 @@ interface ChatView {
 
 
 class ChatFragment : Fragment(), ChatView {
-    val vmb = vmb<ChatViewModel, FragmentChatBinding>(R.layout.fragment_chat)
+
+    private val vmb by vmb<ChatViewModel, FragmentChatBinding>(R.layout.fragment_chat) { _ -> ChatViewModel()}
 
     override val itemBinding = ItemBinding.of<ChatMessage>(BR.message, R.layout.item_list)
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?) = vmb.rootView
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?) = vmb.binding.root
 }
 
 
