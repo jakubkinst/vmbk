@@ -14,10 +14,16 @@ import android.util.Log
 
 // ViewModelBinding extension functions
 inline fun <reified VM : ViewModel, B : ViewDataBinding> FragmentActivity.vmb(@LayoutRes layoutResId: Int, viewModelProvider: ViewModelProvider? = null)
-        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, viewModelProvider)
+        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, viewModelProvider, null)
+
+inline fun <reified VM : ViewModel, B : ViewDataBinding> FragmentActivity.vmb(@LayoutRes layoutResId: Int, noinline viewModelFactory: () -> VM)
+        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, null, viewModelFactory)
 
 inline fun <reified VM : ViewModel, B : ViewDataBinding> Fragment.vmb(@LayoutRes layoutResId: Int, viewModelProvider: ViewModelProvider? = null)
-        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, viewModelProvider)
+        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, viewModelProvider, null)
+
+inline fun <reified VM : ViewModel, B : ViewDataBinding> Fragment.vmb(@LayoutRes layoutResId: Int, noinline viewModelFactory: () -> VM)
+        = ViewModelBinding<VM, B>(this, VM::class.java, layoutResId, null, viewModelFactory)
 
 
 // ViewModelBinding class itself
@@ -25,7 +31,8 @@ class ViewModelBinding<VM : ViewModel, B : ViewDataBinding> constructor(
         private val lifecycleOwner: LifecycleOwner,
         val viewModelClass: Class<VM>,
         @LayoutRes val layoutResId: Int,
-        var viewModelProvider: ViewModelProvider?
+        var viewModelProvider: ViewModelProvider?,
+        val viewModelFactory: (() -> VM)?
 ) {
     init {
         if (!(lifecycleOwner is FragmentActivity || lifecycleOwner is Fragment))
@@ -69,8 +76,16 @@ class ViewModelBinding<VM : ViewModel, B : ViewDataBinding> constructor(
 
     fun initializeVmb() {
         if (initialized) return
-        if (viewModelProvider == null)
-            viewModelProvider = if (fragment != null) ViewModelProviders.of(fragment) else ViewModelProviders.of(activity)
+        if (viewModelFactory != null) {
+            val factory = object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>?) = viewModelFactory!!.invoke() as T
+            }
+            if (viewModelProvider == null)
+                viewModelProvider = if (fragment != null) ViewModelProviders.of(fragment, factory) else ViewModelProviders.of(activity, factory)
+        } else {
+            if (viewModelProvider == null)
+                viewModelProvider = if (fragment != null) ViewModelProviders.of(fragment) else ViewModelProviders.of(activity)
+        }
         initialized = true
     }
 }
