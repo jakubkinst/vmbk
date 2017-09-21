@@ -35,6 +35,7 @@ class MainViewModel(intent: Intent) : ViewModel() {
     init {
         Log.d("INTENT", intent.toString())
     }
+
     fun showChat() {
         displayMessage.value = "Switched to Chat."
         navigationManager.goToChat()
