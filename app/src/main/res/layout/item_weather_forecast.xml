@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+
+		<import type="android.text.format.DateUtils" />
+
+		<variable
+			name="item"
+			type="cz.kinst.jakub.vmbk.model.WeatherForecastItem" />
+	</data>
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:orientation="vertical">
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+			android:text="@{DateUtils.formatDateTime(context, item.dt, 0)}"
+			tools:text="Date" />
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+			android:text="@{@string/temp_metric(item.main.temp)}"
+			tools:text="Temp" />
+	</LinearLayout>
+</layout>

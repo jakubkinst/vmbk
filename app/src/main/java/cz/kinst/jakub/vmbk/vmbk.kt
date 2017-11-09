@@ -74,11 +74,11 @@ class ViewModelBinding<VM : ViewModel, B : ViewDataBinding> constructor(
         })
     }
 
-    fun initializeVmb() {
+    private fun initializeVmb() {
         if (initialized) return
         if (viewModelFactory != null) {
             val factory = object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>?) = viewModelFactory!!.invoke() as T
+                override fun <T : ViewModel?> create(modelClass: Class<T>?) = viewModelFactory.invoke() as T
             }
             if (viewModelProvider == null)
                 viewModelProvider = if (fragment != null) ViewModelProviders.of(fragment, factory) else ViewModelProviders.of(activity, factory)
@@ -137,4 +137,21 @@ class SingleLiveData<T> : MutableLiveData<T>() {
         super.setValue(t)
     }
 
+}
+
+
+class LiveBus<T> {
+    val observers = HashMap<LifecycleOwner, Observer<T>>()
+
+    fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+        observers[lifecycleOwner] = observer
+    }
+
+    fun post(value: T) {
+        observers.keys.forEach { lifecycleOwner ->
+            if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                observers[lifecycleOwner]?.onChanged(value)
+            }
+        }
+    }
 }
